@@ -7,6 +7,7 @@ RUN apt update \
       build-essential bison flex texinfo gperf libtool \
       patchutils bc zlib1g-dev libexpat-dev
 
+
 RUN git clone -b "releases/gcc-14" --depth=1 -c advice.detachedHead=false "https://github.com/gcc-mirror/gcc" /git_gcc
 RUN git clone -b "2024.10.28" --depth=1 -c advice.detachedHead=false https://github.com/riscv/riscv-gnu-toolchain /riscv-gnu-toolchain
 RUN cd /riscv-gnu-toolchain && git rm qemu dejagnu llvm glibc spike && git submodule update --init --recursive
@@ -29,6 +30,13 @@ COPY --from=build /opt/riscv /opt/riscv
 
 RUN apt update \
     && apt install -y git python3 make cmake gcc g++ \
+    python3-pyelftools \
+    python3-usb \
+    python3-pip \
     && apt clean
+
+RUN pip install --break-system-packages \
+    pyhy \
+    ar
 
 RUN cd /opt/riscv/bin && ln /opt/riscv/bin/riscv32-unknown-elf-gcc pico_riscv_gcc
